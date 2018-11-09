@@ -8,35 +8,35 @@ import java.io.*;
 import java.util.HashMap;
 
 public class ApiUtil {
-    private String statusCode;
-    public String body;
+    public HashMap<String, String> body;
     private String responseMessage;
     private String requestMethod;
     private final String host = "https://127.0.0.1/";
     private String url;
-    private HashMap<String,String> header;
+    private HashMap<String, String> header;
+    private HashMap<String, String> expected;
 
     public HashMap<String, String> getHeader() {
         return header;
+    }
+
+    public HashMap<String, String> getExpected() {
+        return expected;
+    }
+
+    public void setExpected(HashMap<String, String> expected) {
+        this.expected = expected;
     }
 
     public void setHeader(HashMap<String, String> header) {
         this.header = header;
     }
 
-    public String getStatusCode() {
-        return statusCode;
-    }
-
-    public void setStatusCode(String statusCode) {
-        this.statusCode = statusCode;
-    }
-
-    public String getBody() {
+    public HashMap<String, String> getBody() {
         return body;
     }
 
-    public void setBody(String body) {
+    public void setBody(HashMap<String, String> body) {
         this.body = body;
     }
 

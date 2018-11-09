@@ -19,7 +19,6 @@ import java.util.*;
 
 public class TestRunner {
     private String tag;
-    private String url;
     private String os;
     private String method;
     private String testName;
@@ -27,20 +26,23 @@ public class TestRunner {
 
     @Parameters({"Tag", "URL", "OS", "Method", "TestName"})
     @BeforeTest
-    public void beforeRun(String tag, String url, String os, String method, String testName) {
+    public void beforeRun(String tag, String url, String os, String method, String testName) throws IOException {
         this.tag = tag;
-        this.url = url;
         this.os = os;
         this.method = method;
         this.testName = testName;
         apiUtil = new ApiUtil();
-
+        apiUtil.setUrl(url);
+        generateDataFromJSON();
     }
 
     @Test
-    public void run() throws IOException {
-        generateDataFromJSON();
-        System.out.println(tag + url + os + method + testName);
+    public void run() {
+        switch (method.toUpperCase()) {
+            case "POST":
+                new PostMethod(apiUtil).runSteps();
+                break;
+        }
     }
 
     @AfterTest
@@ -55,12 +57,10 @@ public class TestRunner {
         for (int i = 0; i < currentList.size(); i++) {
             JSONObject jsonObject = currentList.getJSONObject(i);
             if (jsonObject.get("TestName").equals(testName)) {
-                String text = JSON.toJSONString(jsonObject.get("Header"));
-                generateMap(text);
-                System.out.println("Passed");
-//                System.out.println(text);
+                apiUtil.setHeader(generateMap(JSON.toJSONString(jsonObject.get("Header"))));
+                apiUtil.setBody(generateMap(JSON.toJSONString(jsonObject.get("Body"))));
+                apiUtil.setExpected(generateMap(JSON.toJSONString(jsonObject.get("Expected"))));
             }
-//            System.out.println(currentList.getJSONObject(0));
         }
     }
 
@@ -71,9 +71,8 @@ public class TestRunner {
         for (int i = 0; i < args.length; i++) {
             String key = args[i].split(":")[0];
             String value = args[i].split(":")[1];
-            System.out.println(key + value);
+            hashMap.put(key, value);
         }
-        System.out.println(context);
-        return null;
+        return hashMap;
     }
 }

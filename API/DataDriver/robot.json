@@ -3,16 +3,16 @@
     "TestName": "Mobile_Login_Stauts_200_Success",
     "Header": {
       "Token": "12345",
-      "others": ""
+      "others": "123"
     },
     "Body": {
       "user": "asdb",
       "password": "12345",
-      "others": ""
+      "others": "123"
     },
     "Expected": {
       "status": "200",
-      "$.sotre": "Book",
+      "$.store": "Book",
       "$.author": "Ben"
     }
   },
@@ -20,16 +20,16 @@
     "TestName": "Mobile_Login_Stauts_300_Success",
     "Header": {
       "Token": "12345",
-      "others": ""
+      "others": "123"
     },
     "Body": {
       "user": "asdb",
       "password": "12345",
-      "others": ""
+      "others": "123"
     },
     "Expected": {
       "status": "200",
-      "$.sotre": "Book",
+      "$.store": "Book",
       "$.author": "Ben"
     }
   }
