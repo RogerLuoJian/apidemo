@@ -5,6 +5,8 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.api.base.ApiUtil;
 import org.apache.commons.io.FileUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.testng.annotations.AfterTest;
 import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Parameters;
@@ -18,6 +20,7 @@ import java.lang.reflect.Method;
 import java.util.*;
 
 public class TestRunner {
+	private static Logger logger = LoggerFactory.getLogger(TestRunner.class);
     private String tag;
     private String os;
     private String method;
@@ -57,8 +60,13 @@ public class TestRunner {
         for (int i = 0; i < currentList.size(); i++) {
             JSONObject jsonObject = currentList.getJSONObject(i);
             if (jsonObject.get("TestName").equals(testName)) {
-                apiUtil.setHeader(generateMap(JSON.toJSONString(jsonObject.get("Header"))));
-                apiUtil.setBody(JSON.toJSONString(jsonObject.get("Body")));
+            	apiUtil.setTestCaseName(testName);
+            	String header=JSON.toJSONString(jsonObject.get("Header"));
+            	logger.info("header:"+header);
+                apiUtil.setHeader(generateMap(header));
+                String body=JSON.toJSONString(jsonObject.get("Body"));
+                logger.info("body:"+body);
+                apiUtil.setBody(body);
                 apiUtil.setExpected(generateMap(JSON.toJSONString(jsonObject.get("Expected"))));
             }
         }
