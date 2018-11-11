@@ -3,19 +3,15 @@ package com.api.run;
 import com.api.base.ApiUtil;
 import com.jayway.jsonpath.JsonPath;
 import okhttp3.*;
+import org.apache.log4j.Logger;
 
+import java.io.IOException;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import static okhttp3.MultipartBody.FORM;
 
 
 public class PostMethod {
-	private static Logger logger = LoggerFactory.getLogger(PostMethod.class);
+    private static final Logger logger = Logger.getLogger(PostMethod.class.getName());
     private ApiUtil apiUtil;
     private OkHttpClient okHttpClient;
 
@@ -23,14 +19,13 @@ public class PostMethod {
         this.apiUtil = apiUtil;
     }
 
-    public void runSteps() {
-        logger.info(apiUtil.getTestCaseName()+" Test run step");
+    public void runSteps() throws IOException {
         okHttpClient = new OkHttpClient();
         Request request = getRequest();
         try {
             Response response = okHttpClient.newCall(request).execute();
             String responseMessage = response.body().string();
-            logger.info(apiUtil.getTestCaseName()+" response message "+responseMessage);
+            logger.info(apiUtil.getTestCaseName() + " - Response message: " + responseMessage);
             int statusCode = response.code();
             apiUtil.setResponseMessage(responseMessage);
             apiUtil.setActualStatusCode(String.valueOf(statusCode));
@@ -40,41 +35,41 @@ public class PostMethod {
                 String expectedValue = expected.get(path);
                 String actualValue = jsonPath(apiUtil.getResponseMessage(), path);
                 if (actualValue.trim().toLowerCase().equals(expectedValue.trim().toLowerCase())) {
-                	logger.info(apiUtil.getTestCaseName()+" Pass");
+                    logger.info(apiUtil.getTestCaseName() + " - Pass, Verify if expected key-value correct, The expected key is: " + path
+                            + " and the actual value is: " + actualValue + ", the expected value is " + actualValue);
                 } else {
-                	logger.info(apiUtil.getTestCaseName()+" Fail");
+                    apiUtil.setRunStatus(false);
+                    logger.info(apiUtil.getTestCaseName() + " - Fail, Verify if expected key-value correct, The expected key is: " + path
+                            + " and the actual value is: " + actualValue + ", the expected value is " + actualValue);
                 }
             }
             //Verify expected status code
             if (apiUtil.getActualStatusCode().trim().toLowerCase().equals(apiUtil.getExpectedStatusCode().trim().toLowerCase())) {
-            	logger.info(apiUtil.getTestCaseName()+" Pass");
+                logger.info(apiUtil.getTestCaseName() + " - Pass, Verify if status code correct, The actual code is: "
+                        + apiUtil.getActualStatusCode() + " and the expected code " + apiUtil.getExpectedStatusCode());
             } else {
-            	logger.info(apiUtil.getTestCaseName()+" Fail");
+                apiUtil.setRunStatus(false);
+                logger.info(apiUtil.getTestCaseName() + " - Fail, Verify if status code correct, The actual code is: "
+                        + apiUtil.getActualStatusCode() + " and the expected code " + apiUtil.getExpectedStatusCode());
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error("Post fail, Please check below error message: " + e.toString());
+            throw e;
         }
     }
 
     private String buildURL() {
         HttpUrl.Builder urlBuilder = HttpUrl.parse(apiUtil.getHost() + apiUtil.getUrl()).newBuilder();
-//        urlBuilder.addQueryParameter("account", "robot1");
-//        urlBuilder.addQueryParameter("password", "MTIzNDU2");
-        String url = urlBuilder.build().toString();
-        return url;
-    }
-    
-    private FormBody buildFormBody(){
-    	FormBody.Builder builder=new FormBody.Builder();
-    	builder.add("account", "robot1");
-    	builder.add("password", "MTIzNDU2");
-    	
-    	return builder.build();
+        return urlBuilder.build().toString();
     }
 
-    private RequestBody buildRequestBody() {
-        MediaType JSON = MediaType.parse("application/json;charset=utf-8");
-        return RequestBody.create(JSON, apiUtil.getBody());
+    private FormBody buildFormBody() {
+        FormBody.Builder builder = new FormBody.Builder();
+        HashMap<String, String> body = apiUtil.getBody();
+        for (String key : body.keySet()) {
+            builder.add(key, body.get(key));
+        }
+        return builder.build();
     }
 
     private Request getRequest() {
