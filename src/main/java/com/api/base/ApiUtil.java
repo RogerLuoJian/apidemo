@@ -8,6 +8,7 @@ import java.io.*;
 import java.util.HashMap;
 
 public class ApiUtil {
+	private String testCaseName;
     private String body;
     private String responseMessage;
     private String requestMethod;
@@ -85,5 +86,10 @@ public class ApiUtil {
     public void setUrl(String url) {
         this.url = url;
     }
-
+    public String getTestCaseName(){
+    	return this.testCaseName;
+    }
+    public void setTestCaseName(String name){
+    	this.testCaseName=name;
+    }
 }
