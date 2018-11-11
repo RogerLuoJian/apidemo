@@ -2,18 +2,16 @@
   {
     "TestName": "Mobile_Login_Stauts_200_Success",
     "Header": {
-      "Token": "12345",
-      "others": "123"
+      "Content-Type": "application/json"
     },
     "Body": {
-      "user": "asdb",
-      "password": "12345",
-      "others": "123"
+      "account": "robot1",
+      "password": "MTIzNDU2"
     },
     "Expected": {
       "status": "200",
-      "$.store": "Book",
-      "$.author": "Ben"
+      "message": "success",
+      "data.token": "Ben"
     }
   },
   {

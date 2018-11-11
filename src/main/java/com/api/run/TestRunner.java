@@ -58,7 +58,7 @@ public class TestRunner {
             JSONObject jsonObject = currentList.getJSONObject(i);
             if (jsonObject.get("TestName").equals(testName)) {
                 apiUtil.setHeader(generateMap(JSON.toJSONString(jsonObject.get("Header"))));
-                apiUtil.setBody(generateMap(JSON.toJSONString(jsonObject.get("Body"))));
+                apiUtil.setBody(JSON.toJSONString(jsonObject.get("Body")));
                 apiUtil.setExpected(generateMap(JSON.toJSONString(jsonObject.get("Expected"))));
             }
         }
@@ -71,7 +71,13 @@ public class TestRunner {
         for (int i = 0; i < args.length; i++) {
             String key = args[i].split(":")[0];
             String value = args[i].split(":")[1];
-            hashMap.put(key, value);
+            if(key.equals("status")) {
+                apiUtil.setExpectedStatusCode(value);
+                continue;
+            }else
+            {
+                hashMap.put(key, value);
+            }
         }
         return hashMap;
     }

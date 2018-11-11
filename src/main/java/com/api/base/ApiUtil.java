@@ -8,13 +8,31 @@ import java.io.*;
 import java.util.HashMap;
 
 public class ApiUtil {
-    public HashMap<String, String> body;
+    private String body;
     private String responseMessage;
     private String requestMethod;
-    private final String host = "https://127.0.0.1/";
+    private final String host = "https://logistics-api.epsit.cn";
     private String url;
     private HashMap<String, String> header;
     private HashMap<String, String> expected;
+    private String expectedStatusCode;
+    private String actualStatusCode;
+
+    public String getExpectedStatusCode() {
+        return expectedStatusCode;
+    }
+
+    public void setExpectedStatusCode(String expectedStatusCode) {
+        this.expectedStatusCode = expectedStatusCode;
+    }
+
+    public String getActualStatusCode() {
+        return actualStatusCode;
+    }
+
+    public void setActualStatusCode(String actualStatusCode) {
+        this.actualStatusCode = actualStatusCode;
+    }
 
     public HashMap<String, String> getHeader() {
         return header;
@@ -32,11 +50,11 @@ public class ApiUtil {
         this.header = header;
     }
 
-    public HashMap<String, String> getBody() {
+    public String getBody() {
         return body;
     }
 
-    public void setBody(HashMap<String, String> body) {
+    public void setBody(String body) {
         this.body = body;
     }
 
