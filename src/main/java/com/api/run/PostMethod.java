@@ -79,6 +79,12 @@ public class PostMethod {
     }
 
     private String jsonPath(String body, String path) {
-        return JsonPath.read(body, "$." + path);
+        String result = "";
+        try {
+            result = JsonPath.read(body, "$." + path);
+            return result;
+        }catch (Exception e) {
+            return path + " Not found";
+        }
     }
 }
