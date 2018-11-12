@@ -15,20 +15,17 @@
     }
   },
   {
-    "TestName": "Mobile_Login_Stauts_300_Success",
+    "TestName": "Mobile_Info_Stauts_200_Success",
     "Header": {
-      "Token": "12345",
-      "others": "123"
+      "Content-Type": "application/json"
     },
     "Body": {
-      "user": "asdb",
-      "password": "12345",
-      "others": "123"
+
     },
     "Expected": {
       "status": "200",
-      "$.store": "Book",
-      "$.author": "Ben"
+      "store": "Book",
+      "author": "Ben"
     }
   }
 ]

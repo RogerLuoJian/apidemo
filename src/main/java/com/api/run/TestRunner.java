@@ -4,6 +4,8 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.api.base.ApiUtil;
+import com.jayway.jsonpath.JsonPath;
+import okhttp3.*;
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
 import org.testng.Assert;
@@ -42,8 +44,14 @@ public class TestRunner {
             case "POST":
                 logger.info(testName + " - Ready to post url: " + apiUtil.getUrl());
                 new PostMethod(apiUtil).runSteps();
-                Boolean runStatus = true;
-                Assert.assertEquals(runStatus, apiUtil.getRunStatus());
+                Boolean runPostStatus = true;
+                Assert.assertEquals(runPostStatus, apiUtil.getRunStatus());
+                break;
+            case "GET":
+                logger.info(testName + " - Ready to get url: " + apiUtil.getUrl());
+                new GetMethod(apiUtil).runSteps();
+                Boolean runGetStatus = true;
+                Assert.assertEquals(runGetStatus, apiUtil.getRunStatus());
                 break;
         }
     }
@@ -54,7 +62,7 @@ public class TestRunner {
     }
 
     private void generateDataFromJSON() throws IOException {
-        File file = new File("API/DataDriver/robot.json");
+        File file = new File("API/DataDriver/" + tag + ".json");
         String contentList = FileUtils.readFileToString(file, "UTF-8");
         JSONArray currentList = JSON.parseArray(contentList);
         for (int i = 0; i < currentList.size(); i++) {
@@ -64,9 +72,14 @@ public class TestRunner {
                 String header = JSON.toJSONString(jsonObject.get("Header"));
                 logger.info(testName + " - Build header: " + header);
                 apiUtil.setHeader(generateMap(header));
+                if (!testName.toLowerCase().contains("login")) {
+                    generateToken();
+                }
                 String body = JSON.toJSONString(jsonObject.get("Body"));
-                logger.info(testName + " - Build body: " + body);
-                apiUtil.setBody(generateMap(body));
+                if(!body.equals("{}")) {
+                    logger.info(testName + " - Build body: " + body);
+                    apiUtil.setBody(generateMap(body));
+                }
                 apiUtil.setExpected(generateMap(JSON.toJSONString(jsonObject.get("Expected"))));
             }
         }
@@ -87,5 +100,15 @@ public class TestRunner {
             }
         }
         return hashMap;
+    }
+
+    private void generateToken() throws IOException {
+        OkHttpClient okHttpClient = new OkHttpClient();
+        RequestBody requestBody = new FormBody.Builder().add("account", "robot1").add("password", "MTIzNDU2").build();
+        Request request = new Request.Builder().url(apiUtil.getHost() + "/auth/robotLogin").addHeader("Content-Type", "application/json").post(requestBody).build();
+        Response response = okHttpClient.newCall(request).execute();
+        String resM = response.body().string();
+        String token = JsonPath.read(resM, "$.data.token");
+        apiUtil.getHeader().put("toekn", token);
     }
 }
